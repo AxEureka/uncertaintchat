@@ -67,6 +67,7 @@
 <script>
 let phase = 0;
 let userName = "";
+let partnerName = "";
 let firstChoice = null;
 let secondChoice = null;
 
@@ -133,6 +134,11 @@ function sendInput(){
   document.getElementById('input').value='';
 
   handleFlow(val);
+
+  // 👇最後の入力を拾う
+  if(phase === 6){
+    phase++;
+  }
 }
 
 function handleFlow(val){
