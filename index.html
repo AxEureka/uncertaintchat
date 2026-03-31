@@ -34,8 +34,25 @@
 <div id="choices"></div>
 
 <div class="input-area" id="inputArea">
-<input id="input" placeholder="入力...">
+<input id="input" placeholder="何かメッセージを送ってください">
 <button onclick="sendInput()">送信</button>
+</div>
+</div>
+
+<!-- 追加課題 -->
+<div id="screen5" class="screen">
+<h2>追加の課題</h2>
+<p>追加の課題を行いますか？</p>
+
+<div id="choiceBlock">
+<button onclick="selectFinal('yes')">はい</button>
+<button onclick="selectFinal('no')">いいえ</button>
+<button onclick="selectFinal('busy')">都合が悪いのでいいえ</button>
+</div>
+
+<div id="resultBlock" style="display:none;">
+<p id="partnerReply"></p>
+<button onclick="goToForm()">OK</button>
 </div>
 </div>
 
@@ -52,40 +69,43 @@ let step = 0;
 let userName = "";
 let firstChoice = null;
 let secondChoice = null;
-let chatLog = [];
 
-// 個人ID
 const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
-// 条件
 let condition = {
   liking: Math.random() < 0.5 ? "high" : "low",
   certainty: Math.random() < 0.5 ? "certain" : "uncertain"
 };
 
-// 画面切替
 function next(n){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen'+n).classList.add('active');
 }
 
-// 入力欄表示制御
 function toggleInput(show){
   document.getElementById('inputArea').style.display = show ? 'flex' : 'none';
 }
 
-// メッセージ追加
+function lockInput(message){
+  const input = document.getElementById('input');
+  input.disabled = true;
+  input.placeholder = message;
+}
+
+function unlockInput(){
+  const input = document.getElementById('input');
+  input.disabled = false;
+  input.placeholder = "何かメッセージを送ってください";
+}
+
 function addMsg(text, cls){
   const div = document.createElement('div');
   div.className = 'msg '+cls;
   div.innerText = text;
   document.getElementById('chat').appendChild(div);
   div.scrollIntoView();
-
-  chatLog.push({sender: cls, text: text, time: Date.now()});
 }
 
-// チャット開始
 function startChat(){
   userName = document.getElementById('name').value;
   if(userName.length < 1){
@@ -99,11 +119,8 @@ function startChat(){
   setTimeout(()=>{
     addMsg(`こんにちは、${userName}さん！何か話しかけてみてください😊`, 'partner');
   },1000);
-
-  document.getElementById('input').focus();
 }
 
-// 入力送信
 function sendInput(){
   const val = document.getElementById('input').value;
   if(val.length < 2) return;
@@ -111,16 +128,23 @@ function sendInput(){
   addMsg(val,'user');
   document.getElementById('input').value='';
 
+  // ★ 最後の自由入力
+  if(step === 999){
+    toggleInput(false);
+    setTimeout(()=> next(5),1000);
+    return;
+  }
+
   step++;
   toggleInput(false);
-
   setTimeout(progress,800);
 }
 
-// 選択肢表示
 function showChoices(options){
   const div = document.getElementById('choices');
   div.innerHTML = '';
+
+  lockInput("ボタンを選択してください");
 
   options.forEach(opt=>{
     const btn = document.createElement('button');
@@ -129,6 +153,7 @@ function showChoices(options){
     btn.onclick = ()=>{
       addMsg(opt.text,'user');
       div.innerHTML='';
+      unlockInput();
 
       if(!firstChoice){
         firstChoice = opt.key;
@@ -140,20 +165,18 @@ function showChoices(options){
       },1000);
 
       step++;
-      toggleInput(true); // ← 次の入力を出す
+      toggleInput(true);
     };
 
     div.appendChild(btn);
   });
 }
 
-// 相手の返答
 function getReply(key){
   if(key === 'weekend') return "友達とご飯行ったりすることが多いかな！";
   if(key === 'type') return "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
 }
 
-// 進行制御
 function progress(){
   if(step === 1){
     showChoices([
@@ -174,42 +197,28 @@ function progress(){
   }
 }
 
-// 終了処理
 function showEnd(){
-  toggleInput(false);
-
   const msg = condition.liking === 'high'
     ? '今日はありがとう、あなたと話すのはとても楽しかった！'
     : '今日はありがとう！';
 
   addMsg(msg,'partner');
 
-  setTimeout(()=>{
-    document.getElementById('choices').innerHTML = '';
-
-    ['はい','いいえ','都合が悪いのでいいえ'].forEach(c=>{
-      const btn = document.createElement('button');
-      btn.innerText = c;
-
-      btn.onclick = ()=>{
-        addMsg(c,'user');
-
-        const reply = condition.certainty === 'certain'
-          ? 'はい！ぜひやりたい！'
-          : 'ちょっと予定まだ分からなくて…またタイミング合えばやろう！';
-
-        setTimeout(()=>{
-          addMsg(reply,'partner');
-          setTimeout(goToForm,1500);
-        },1000);
-      };
-
-      document.getElementById('choices').appendChild(btn);
-    });
-  },1000);
+  toggleInput(true);
+  step = 999; // ← 最後の自由入力へ
 }
 
-// フォーム遷移
+function selectFinal(choice){
+  document.getElementById('choiceBlock').style.display = 'none';
+
+  const reply = condition.certainty === 'certain'
+    ? '相手の回答：はい'
+    : '相手の回答：都合が悪いのでいいえ';
+
+  document.getElementById('partnerReply').innerText = reply;
+  document.getElementById('resultBlock').style.display = 'block';
+}
+
 function goToForm(){
   next(4);
 
