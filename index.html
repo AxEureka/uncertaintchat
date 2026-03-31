@@ -104,21 +104,27 @@ function addMsg(text, cls){
 
 function startChat(){
   userName = document.getElementById('name').value;
+  const gender = document.getElementById('gender').value;
+
   if(userName.length < 1){
     alert("名前を入力してください");
     return;
   }
 
+  // 👇ここ追加
+  partnerName = gender === "male" ? "アヤ" : "リョウ";
+
   next(3);
 
   setTimeout(()=>{
-    addMsg(`こんにちは、${userName}です。`, 'partner');
+    addMsg(`こんにちは、${partnerName}です。`, 'partner');
   },800);
 
   setTimeout(()=>{
     addMsg(`${userName}さんですか？`, 'partner');
     setInputMode("free");
   },1800);
+};
 }
 
 function sendInput(){
@@ -165,11 +171,29 @@ function handleFlow(val){
   else if(phase === 5){
     setTimeout(()=>{
       addMsg("なるほど",'partner');
-      addMsg("お時間です。最後に相手にひとことメッセージを送ってください",'system');
-      setInputMode("free");
-    },800);
-    phase++;
-  }
+      addMsg("あと1ターンで終了します。",'system');
+
+      setTimeout(()=>{
+        const msg = condition.liking === 'high'
+          ? '今日はありがとう、あなたと話すのはとても楽しかった！'
+          : '今日はありがとう！';
+      
+        addMsg(msg,'partner');
+      
+        // 👇ここに入れる！！
+        setInputMode("choice");
+      
+        setTimeout(()=>{
+          addMsg("最後にメッセージを送ってください",'system');
+      
+          // 👇0.5秒後に入力解放
+          setTimeout(()=>{
+            setInputMode("free");
+          },500);
+      
+        },800);
+      
+      },800);
 
   // ⑤ 最後
   else if(phase === 6){
