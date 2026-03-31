@@ -111,7 +111,6 @@ function startChat(){
     return;
   }
 
-  // 👇ここ追加
   partnerName = gender === "male" ? "アヤ" : "リョウ";
 
   next(3);
@@ -124,7 +123,6 @@ function startChat(){
     addMsg(`${userName}さんですか？`, 'partner');
     setInputMode("free");
   },1800);
-};
 }
 
 function sendInput(){
@@ -172,7 +170,7 @@ function handleFlow(val){
     setTimeout(()=>{
       addMsg("なるほど",'partner');
       addMsg("あと1ターンで終了します。",'system');
-
+  
       setTimeout(()=>{
         const msg = condition.liking === 'high'
           ? '今日はありがとう、あなたと話すのはとても楽しかった！'
@@ -180,13 +178,11 @@ function handleFlow(val){
       
         addMsg(msg,'partner');
       
-        // 👇ここに入れる！！
         setInputMode("choice");
       
         setTimeout(()=>{
           addMsg("最後にメッセージを送ってください",'system');
       
-          // 👇0.5秒後に入力解放
           setTimeout(()=>{
             setInputMode("free");
           },500);
@@ -194,7 +190,11 @@ function handleFlow(val){
         },800);
       
       },800);
-
+  
+    },800);
+  
+    phase++;
+  }
   // ⑤ 最後
   else if(phase === 6){
     setTimeout(()=>{
