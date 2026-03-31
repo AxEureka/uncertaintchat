@@ -144,32 +144,33 @@ function flow(){
   }
 
   else if(phase === 1){
-    // まず「そうなんですね！」を表示
+    // phase 1: ユーザーが1つ目の質問に答えた後、相手のターン
     setTimeout(()=>{
       addMsg("そうなんですね！",'partner');
     },800);
-  
-    // その後「相手が質問を選んでいます…」を表示
+
     setTimeout(()=>{
       addMsg("相手が質問を選んでいます…",'system');
     },1600);
-  
-    // その後「趣味は何ですか？」を表示して入力可能にする
+
     setTimeout(()=>{
       addMsg("趣味は何ですか？",'partner');
       setInputMode("free");   // 自由入力に切り替え
-      phase++;                // このタイミングで phase を進める
+      // この時点では phase は進めない
     },2400);
   }
 
   else if(phase === 2){
+    // phase 2: ユーザーが「趣味は何ですか？」に答えた後
     setTimeout(()=>{
       addMsg("私は映画を見るのが好きです",'partner');
-      showChoices();
+      showChoices(); // 2つ目の質問を選ばせる
+      phase++;       // この時点で phase を進める
     },800);
   }
 
   else if(phase === 3){
+    // phase 3: 最後のまとめ
     setTimeout(()=>{
       addMsg("なるほど",'partner');
       addMsg("もう時間みたいです…",'system');
@@ -194,10 +195,7 @@ function flow(){
 
     },800);
   }
-
-  phase++;
 }
-
 function showChoices(){
   const div = document.getElementById('choices');
   div.innerHTML = '';
