@@ -89,9 +89,12 @@ function startChat(){
 
   next(3);
   setTimeout(()=>{
-    addMsg(`こんにちは、${userName}さん！`, 'partner');
+  addMsg(`こんにちは、${userName}さん！`, 'partner');
   },1000);
-}
+
+// 入力を促す
+  document.getElementById('input').focus();
+  }
 
 function sendInput(){
   const val = document.getElementById('input').value;
