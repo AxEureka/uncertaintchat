@@ -22,6 +22,7 @@
 <select id="gender">
 <option value="male">男性</option>
 <option value="female">女性</option>
+<option value="other">その他</option>
 </select><br><br>
 <button onclick="startChat()">開始</button>
 </div>
@@ -66,6 +67,7 @@ let partnerName = "";
 let firstChoice = null;
 let secondChoice = null;
 let isFinal = false;
+let questionsAnswered = { first: false, second: false };
 
 const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
@@ -104,15 +106,15 @@ function startChat(){
   const gender = document.getElementById('gender').value;
   if(!userName){ alert("名前を入力してください"); return; }
 
-  partnerName = gender === "male" ? "アヤ" : "リョウ";
+  if(gender === "male") partnerName = "アヤ";
+  else if(gender === "female") partnerName = "リョウ";
+  else partnerName = Math.random() < 0.5 ? "アヤ" : "リョウ";
 
   next(3);
 
   setTimeout(()=> addMsg(`こんにちは、${partnerName}です。`, 'partner'),800);
-  setTimeout(()=>{
-    addMsg(`${userName}さんですか？`, 'partner');
-    setInputMode("free");
-  },1800);
+  setTimeout(()=> addMsg(`${userName}さんですか？`, 'partner'),1600);
+  setTimeout(()=> setInputMode("free"),2000);
 }
 
 function sendInput(){
@@ -122,53 +124,65 @@ function sendInput(){
   addMsg(val,'user');
   document.getElementById('input').value = "";
 
-  if(isFinal){
-    setTimeout(()=>{
-      addMsg("チャットを終了します",'system');
-      setTimeout(()=> next(5),1500);
-    },800);
-    return;
-  }
-
   flow();
 }
 
 function flow(){
   if(phase === 0){
+    // 挨拶後ユーザー入力 → partner「よろしくお願いします！」 → 質問選択
     setTimeout(()=>{
       addMsg("よろしくお願いします！",'partner');
       showChoices();
     },800);
   }
   else if(phase === 1){
-    // 1回目の質問回答後 → 趣味質問
+    // 1回目質問回答後 → partner「〇〇さんは？」 → free入力
     setTimeout(()=>{
-      addMsg("趣味は何ですか？",'partner');
+      addMsg("〇〇さんは？",'partner');
       setInputMode("free");
     },800);
   }
   else if(phase === 2){
-    // 趣味回答後 → 相手返答
+    // 1回目ユーザー回答後 → partner「いいですね」 → 2回目質問
     setTimeout(()=>{
-      addMsg("私は映画を見るのが好きです",'partner');
-      showChoices();
+      addMsg("いいですね",'partner');
+      addMsg("相手が質問を選んでいます",'system');
+      setTimeout(()=>{
+        addMsg("将来やってみたいことはありますか？",'partner');
+        setInputMode("free");
+      },800);
     },800);
   }
   else if(phase === 3){
-    // 2回目質問回答後 → 終了前フロー
+    // 2回目ユーザー回答後 → partner回答 → 質問ボタン残り選択
     setTimeout(()=>{
-      addMsg("あと1ターンで終了です…",'system');
-
-      setTimeout(()=>{
-        const msg = condition.liking === 'high'
-          ? '今日はありがとう、あなたと話すのはとても楽しかった！'
-          : '今日はありがとう！';
-        addMsg(msg,'partner');
-
-        // ユーザー自由入力待ち
-        setInputMode("free");
-        isFinal = true;
-      },800);
+      addMsg("私は今の職場から独立したいと考えています。",'partner');
+      showChoices();
+    },800);
+  }
+  else if(phase === 4){
+    // 最後質問回答後 → partner「〇〇さんは？」 → free入力
+    setTimeout(()=>{
+      addMsg("〇〇さんは？",'partner');
+      setInputMode("free");
+    },800);
+  }
+  else if(phase === 5){
+    // 最後ユーザー回答後 → system「時間です」 → partner最終メッセージ → free入力 → 終了
+    setTimeout(()=>{
+      addMsg("時間です。最後のメッセージを送ってください。",'system');
+      const msg = condition.liking === 'high'
+        ? '今日はありがとう。話しててとても楽しかったです！'
+        : '今日はありがとう。';
+      addMsg(msg,'partner');
+      setInputMode("free");
+      isFinal = true;
+    },800);
+  }
+  else if(isFinal){
+    setTimeout(()=>{
+      addMsg("チャットを終了します",'system');
+      setTimeout(()=> next(5),1500);
     },800);
   }
 
@@ -183,12 +197,14 @@ function showChoices(){
   let options;
   if(!firstChoice){
     options = [
-      {text:"週末なにしてる？", key:"weekend"},
-      {text:"恋人にするならどんな人？", key:"type"}
+      {text:"休みの日は何をしていますか？", key:"weekend"},
+      {text:"恋人にするならどんな人がいいですか？", key:"type"}
     ];
   }else{
+    // 残っている質問のみ表示
     options = [
-      {text: secondChoice === 'weekend' ? "週末なにしてる？" : "恋人にするならどんな人？", key: secondChoice}
+      {text: firstChoice === 'weekend' ? "恋人にするならどんな人がいいですか？" : "休みの日は何をしていますか？", 
+       key: firstChoice === 'weekend' ? 'type' : 'weekend'}
     ];
   }
 
@@ -220,8 +236,8 @@ function showChoices(){
 
 function getReply(key){
   return key === 'weekend'
-    ? "友達とご飯行ったりすることが多いかな！"
-    : "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
+    ? "本を読んだり、友達とごはんに行ったりしてます"
+    : "話してて楽しい人が好きです。";
 }
 
 function selectFinal(){
