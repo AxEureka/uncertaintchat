@@ -6,15 +6,18 @@
 <link rel="stylesheet" href="chat.css">
 <title>チャット実験</title>
 </head>
+
 <body>
 <div class="container">
 
+<!-- 説明 -->
 <div id="screen1" class="screen active">
 <h2>実験の説明</h2>
 <p>これは架空のテキストチャットを体験する課題です。</p>
 <button onclick="next(2)">次へ</button>
 </div>
 
+<!-- 登録 -->
 <div id="screen2" class="screen">
 <h2>登録</h2>
 <input id="name" placeholder="名前"><br><br>
@@ -25,15 +28,18 @@
 <button onclick="startChat()">開始</button>
 </div>
 
+<!-- チャット -->
 <div id="screen3" class="screen">
 <div class="chat-box" id="chat"></div>
 <div id="choices"></div>
+
 <div class="input-area" id="inputArea">
 <input id="input" placeholder="入力...">
 <button onclick="sendInput()">送信</button>
 </div>
 </div>
 
+<!-- フォーム -->
 <div id="screen4" class="screen">
 <h2>質問に回答してください</h2>
 <p><a id="formLink" href="#">質問フォームへ</a></p>
@@ -48,19 +54,27 @@ let firstChoice = null;
 let secondChoice = null;
 let chatLog = [];
 
-// 個人ID生成（重要）
+// 個人ID
 const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
+// 条件
 let condition = {
   liking: Math.random() < 0.5 ? "high" : "low",
   certainty: Math.random() < 0.5 ? "certain" : "uncertain"
 };
 
+// 画面切替
 function next(n){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen'+n).classList.add('active');
 }
 
+// 入力欄表示制御
+function toggleInput(show){
+  document.getElementById('inputArea').style.display = show ? 'flex' : 'none';
+}
+
+// メッセージ追加
 function addMsg(text, cls){
   const div = document.createElement('div');
   div.className = 'msg '+cls;
@@ -71,28 +85,39 @@ function addMsg(text, cls){
   chatLog.push({sender: cls, text: text, time: Date.now()});
 }
 
+// チャット開始
 function startChat(){
   userName = document.getElementById('name').value;
-  if(userName.length < 1){ alert("名前を入力してください"); return; }
-
-  next(3);
-  setTimeout(()=>{
-  addMsg(`こんにちは、${userName}さん！`, 'partner');
-  },1000);
-
-// 入力を促す
-  document.getElementById('input').focus();
+  if(userName.length < 1){
+    alert("名前を入力してください");
+    return;
   }
 
+  next(3);
+  toggleInput(true);
+
+  setTimeout(()=>{
+    addMsg(`こんにちは、${userName}さん！何か話しかけてみてください😊`, 'partner');
+  },1000);
+
+  document.getElementById('input').focus();
+}
+
+// 入力送信
 function sendInput(){
   const val = document.getElementById('input').value;
   if(val.length < 2) return;
+
   addMsg(val,'user');
   document.getElementById('input').value='';
+
   step++;
+  toggleInput(false);
+
   setTimeout(progress,800);
 }
 
+// 選択肢表示
 function showChoices(options){
   const div = document.getElementById('choices');
   div.innerHTML = '';
@@ -115,17 +140,20 @@ function showChoices(options){
       },1000);
 
       step++;
+      toggleInput(true); // ← 次の入力を出す
     };
 
     div.appendChild(btn);
   });
 }
 
+// 相手の返答
 function getReply(key){
   if(key === 'weekend') return "友達とご飯行ったりすることが多いかな！";
   if(key === 'type') return "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
 }
 
+// 進行制御
 function progress(){
   if(step === 1){
     showChoices([
@@ -146,7 +174,10 @@ function progress(){
   }
 }
 
+// 終了処理
 function showEnd(){
+  toggleInput(false);
+
   const msg = condition.liking === 'high'
     ? '今日はありがとう、あなたと話すのはとても楽しかった！'
     : '今日はありがとう！';
@@ -178,6 +209,7 @@ function showEnd(){
   },1000);
 }
 
+// フォーム遷移
 function goToForm(){
   next(4);
 
@@ -186,5 +218,6 @@ function goToForm(){
   document.getElementById('formLink').href = url;
 }
 </script>
+
 </body>
 </html>
