@@ -65,7 +65,7 @@
 </div>
 
 <script>
-let step = 0;
+let phase = 0;
 let userName = "";
 let firstChoice = null;
 let secondChoice = null;
@@ -82,20 +82,16 @@ function next(n){
   document.getElementById('screen'+n).classList.add('active');
 }
 
-function toggleInput(show){
-  document.getElementById('inputArea').style.display = show ? 'flex' : 'none';
-}
-
-function lockInput(message){
+function setInputMode(mode){
   const input = document.getElementById('input');
-  input.disabled = true;
-  input.placeholder = message;
-}
 
-function unlockInput(){
-  const input = document.getElementById('input');
-  input.disabled = false;
-  input.placeholder = "何かメッセージを送ってください";
+  if(mode === "free"){
+    input.disabled = false;
+    input.placeholder = "入力してください";
+  }else{
+    input.disabled = true;
+    input.placeholder = "質問を選んでください";
+  }
 }
 
 function addMsg(text, cls){
@@ -114,37 +110,94 @@ function startChat(){
   }
 
   next(3);
-  toggleInput(true);
 
   setTimeout(()=>{
-    addMsg(`こんにちは、${userName}さん！何か話しかけてみてください😊`, 'partner');
-  },1000);
+    addMsg(`こんにちは、${userName}です。`, 'partner');
+  },800);
+
+  setTimeout(()=>{
+    addMsg(`${userName}さんですか？`, 'partner');
+    setInputMode("free");
+  },1800);
 }
 
 function sendInput(){
   const val = document.getElementById('input').value;
-  if(val.length < 2) return;
+  if(val.length < 1) return;
 
   addMsg(val,'user');
   document.getElementById('input').value='';
 
-  // ★ 最後の自由入力
-  if(step === 999){
-    toggleInput(false);
-    setTimeout(()=> next(5),1000);
-    return;
-  }
-
-  step++;
-  toggleInput(false);
-  setTimeout(progress,800);
+  handleFlow(val);
 }
 
-function showChoices(options){
+function handleFlow(val){
+
+  // ① 最初の返答
+  if(phase === 0){
+    setTimeout(()=>{
+      addMsg("よろしくお願いします！",'partner');
+      showChoices();
+    },800);
+    phase++;
+  }
+
+  // ② 相手の逆質問後の自由入力
+  else if(phase === 2){
+    setTimeout(()=>{
+      addMsg("そうなんですね！",'partner');
+      addMsg("趣味は何ですか？",'partner');
+      setInputMode("free");
+    },800);
+    phase++;
+  }
+
+  // ③ 趣味回答
+  else if(phase === 3){
+    setTimeout(()=>{
+      addMsg("私は映画を見るのが好きです",'partner');
+      showChoices();
+    },800);
+    phase++;
+  }
+
+  // ④ 2回目逆質問
+  else if(phase === 5){
+    setTimeout(()=>{
+      addMsg("なるほど",'partner');
+      addMsg("お時間です。最後に相手にひとことメッセージを送ってください",'system');
+      setInputMode("free");
+    },800);
+    phase++;
+  }
+
+  // ⑤ 最後
+  else if(phase === 6){
+    setTimeout(()=>{
+      addMsg("チャットを終了します",'system');
+      setTimeout(()=> next(5),1500);
+    },800);
+  }
+}
+
+function showChoices(){
   const div = document.getElementById('choices');
   div.innerHTML = '';
 
-  lockInput("ボタンを選択してください");
+  setInputMode("choice");
+
+  let options;
+
+  if(!firstChoice){
+    options = [
+      {text:"週末なにしてる？", key:"weekend"},
+      {text:"恋人にするならどんな人？", key:"type"}
+    ];
+  }else{
+    options = [
+      {text: secondChoice === 'weekend' ? "週末なにしてる？" : "恋人にするならどんな人？", key: secondChoice}
+    ];
+  }
 
   options.forEach(opt=>{
     const btn = document.createElement('button');
@@ -153,7 +206,6 @@ function showChoices(options){
     btn.onclick = ()=>{
       addMsg(opt.text,'user');
       div.innerHTML='';
-      unlockInput();
 
       if(!firstChoice){
         firstChoice = opt.key;
@@ -162,10 +214,11 @@ function showChoices(options){
 
       setTimeout(()=>{
         addMsg(getReply(opt.key),'partner');
-      },1000);
+        addMsg(`${userName}さんは？`,'partner');
+        setInputMode("free");
+      },800);
 
-      step++;
-      toggleInput(true);
+      phase++;
     };
 
     div.appendChild(btn);
@@ -175,37 +228,6 @@ function showChoices(options){
 function getReply(key){
   if(key === 'weekend') return "友達とご飯行ったりすることが多いかな！";
   if(key === 'type') return "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
-}
-
-function progress(){
-  if(step === 1){
-    showChoices([
-      {text:"週末なにしてる？", key:"weekend"},
-      {text:"恋人にするならどんな人？", key:"type"}
-    ]);
-  }
-  else if(step === 3){
-    showChoices([
-      {text: secondChoice === 'weekend' ? "週末なにしてる？" : "恋人にするならどんな人？", key: secondChoice}
-    ]);
-  }
-  else if(step === 5){
-    setTimeout(()=>{
-      addMsg("ごめん、もう時間みたい…！",'partner');
-      setTimeout(showEnd,1500);
-    },800);
-  }
-}
-
-function showEnd(){
-  const msg = condition.liking === 'high'
-    ? '今日はありがとう、あなたと話すのはとても楽しかった！'
-    : '今日はありがとう！';
-
-  addMsg(msg,'partner');
-
-  toggleInput(true);
-  step = 999; // ← 最後の自由入力へ
 }
 
 function selectFinal(choice){
