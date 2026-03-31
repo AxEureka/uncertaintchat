@@ -1,0 +1,100 @@
+/* 全体 */
+body {
+  font-family: system-ui, sans-serif;
+  margin: 0;
+  background: #f0f0f0;
+}
+
+/* コンテナ */
+.container {
+  max-width: 600px;
+  margin: auto;
+  padding: 10px;
+}
+
+/* 画面切り替え */
+.screen {
+  display: none;
+}
+
+.active {
+  display: block;
+}
+
+/* チャットエリア */
+.chat-box {
+  height: 55vh;
+  overflow-y: auto;
+  background: #ffffff;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* メッセージ */
+.msg {
+  margin: 8px 0;
+  padding: 10px 14px;
+  border-radius: 16px;
+  max-width: 70%;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* 相手 */
+.partner {
+  background: #e5e5ea;
+}
+
+/* 自分 */
+.user {
+  background: #0084ff;
+  color: white;
+  margin-left: auto;
+}
+
+/* ボタン */
+button {
+  padding: 10px 14px;
+  margin: 5px;
+  border: none;
+  border-radius: 8px;
+  background: #0084ff;
+  color: white;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+/* 選択肢エリア */
+#choices {
+  margin-top: 10px;
+}
+
+/* 入力エリア */
+.input-area {
+  display: flex;
+  margin-top: 10px;
+  position: sticky;
+  bottom: 0;
+  background: #f0f0f0;
+  padding: 5px;
+}
+
+/* 入力欄 */
+input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-right: 5px;
+}
+
+/* スマホ対応 */
+@media (max-width: 600px) {
+  .chat-box {
+    height: 60vh;
+  }
+}
