@@ -60,64 +60,73 @@
 </div>
 
 <script>
-function flow(){
-  if(phase === 0){
-    // ユーザーが最初の質問に答えた後
-    setTimeout(()=>{
-      addMsg("よろしくお願いします！",'partner');
-      showChoices(); // 最初の質問ボタン選択
-    },800);
-  }
+let phase = 0;
+let userName = "";
+let partnerName = "";
+let firstChoice = null;
+let secondChoice = null;
+let isFinal = false;
 
-  else if(phase === 1){
-    // ユーザーがボタン選択＋自由入力（1つ目の質問）後
-    setTimeout(()=>{
-      addMsg("そうなんですね！",'partner');        // 相手反応
-    },800);
+const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
-    setTimeout(()=>{
-      addMsg("相手が質問を選んでいます…",'system'); // 相手が質問選択中
-    },1600);
+let condition = {
+  liking: Math.random() < 0.5 ? "high" : "low",
+  certainty: Math.random() < 0.5 ? "certain" : "uncertain"
+};
 
-    setTimeout(()=>{
-      addMsg("趣味は何ですか？",'partner');         // 相手質問
-      setInputMode("free");                           // 自由入力に切り替え
-      phase++;                                        // 次のユーザー入力でphase=2
-    },2400);
-  }
+// =================================
+// 画面切り替え関数（必須）
+// =================================
+function next(n){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen'+n).classList.add('active');
+}
 
-  else if(phase === 2){
-    // ユーザーが趣味を入力した後
-    setTimeout(()=>{
-      addMsg("私は映画を見るのが好きです",'partner'); // 相手返答
-      showChoices();                                   // 次の質問ボタン選択
-    },800);
-    phase++;  // phase=3 次のボタン選択で進む
-  }
+// =================================
+// メッセージ追加＆入力制御
+// =================================
+function addMsg(text, cls){
+  const div = document.createElement('div');
+  div.className = 'msg '+cls;
+  div.innerText = text;
+  document.getElementById('chat').appendChild(div);
+  div.scrollIntoView();
+}
 
-  else if(phase === 3){
-    // ユーザーがボタン選択＋自由入力（2つ目の質問）後
-    setTimeout(()=>{
-      addMsg("なるほど",'partner');
-      addMsg("もう時間みたいです…",'system');
+function setInputMode(mode){
+  const input = document.getElementById('input');
+  input.disabled = (mode !== "free");
+  input.placeholder = mode === "free" ? "入力してください" : "質問を選んでください";
 
-      setTimeout(()=>{
-        const msg = condition.liking === 'high'
-          ? '今日はありがとう、あなたと話すのはとても楽しかった！'
-          : '今日はありがとう！';
-
-        addMsg(msg,'partner');
-
-        setInputMode("free"); // 最後の自由入力
-        addMsg("最後にメッセージを送ってください",'system');
-
-        isFinal = true;  // 送信後は終了処理
-      },800);
-    },800);
+  if(mode === "free"){
+    addMsg("回答を入力してください。", "system");
+  }else if(mode === "choice"){
+    addMsg("質問を選んでください。", "system");
   }
 }
 
-// sendInput も修正不要、isFinal判定のタイミングで終了
+// =================================
+// チャット開始
+// =================================
+function startChat(){
+  userName = document.getElementById('name').value;
+  const gender = document.getElementById('gender').value;
+  if(!userName){ alert("名前を入力してください"); return; }
+
+  partnerName = gender === "male" ? "アヤ" : "リョウ";
+
+  next(3);
+
+  setTimeout(()=> addMsg(`こんにちは、${partnerName}です。`, 'partner'),800);
+  setTimeout(()=>{
+    addMsg(`${userName}さんですか？`, 'partner');
+    setInputMode("free");
+  },1800);
+}
+
+// =================================
+// 入力送信
+// =================================
 function sendInput(){
   const val = document.getElementById('input').value;
   if(!val) return;
@@ -134,6 +143,129 @@ function sendInput(){
   }
 
   flow();
+}
+
+// =================================
+// チャットフロー
+// =================================
+function flow(){
+  if(phase === 0){
+    // ユーザーが最初の入力後
+    setTimeout(()=>{
+      addMsg("よろしくお願いします！",'partner');
+      showChoices(); // 最初の質問ボタン選択
+    },800);
+  }
+
+  else if(phase === 1){
+    // ユーザーが1つ目の質問入力後
+    setTimeout(()=> addMsg("そうなんですね！",'partner'),800);
+    setTimeout(()=> addMsg("相手が質問を選んでいます…",'system'),1600);
+    setTimeout(()=>{
+      addMsg("趣味は何ですか？",'partner');
+      setInputMode("free");
+      phase++;
+    },2400);
+  }
+
+  else if(phase === 2){
+    // 趣味入力後
+    setTimeout(()=>{
+      addMsg("私は映画を見るのが好きです",'partner');
+      showChoices(); // 次の質問ボタン選択
+    },800);
+    phase++;
+  }
+
+  else if(phase === 3){
+    // 2つ目の質問後、終了
+    setTimeout(()=>{
+      addMsg("なるほど",'partner');
+      addMsg("もう時間みたいです…",'system');
+
+      setTimeout(()=>{
+        const msg = condition.liking === 'high'
+          ? '今日はありがとう、あなたと話すのはとても楽しかった！'
+          : '今日はありがとう！';
+
+        addMsg(msg,'partner');
+
+        setInputMode("free");
+        addMsg("最後にメッセージを送ってください",'system');
+        isFinal = true;
+      },800);
+    },800);
+  }
+}
+
+// =================================
+// 質問ボタン表示
+// =================================
+function showChoices(){
+  const div = document.getElementById('choices');
+  div.innerHTML = '';
+  setInputMode("choice");
+
+  let options;
+  if(!firstChoice){
+    options = [
+      {text:"週末なにしてる？", key:"weekend"},
+      {text:"恋人にするならどんな人？", key:"type"}
+    ];
+  }else{
+    options = [
+      {text: secondChoice === 'weekend' ? "週末なにしてる？" : "恋人にするならどんな人？", key: secondChoice}
+    ];
+  }
+
+  options.forEach(opt=>{
+    const btn = document.createElement('button');
+    btn.innerText = opt.text;
+
+    btn.onclick = ()=>{
+      addMsg(opt.text,'user');
+      div.innerHTML='';
+
+      if(!firstChoice){
+        firstChoice = opt.key;
+        secondChoice = opt.key === 'weekend' ? 'type' : 'weekend';
+      }
+
+      setTimeout(()=>{
+        addMsg(getReply(opt.key),'partner');
+        addMsg(`${userName}さんは？`,'partner');
+        setInputMode("free");
+      },800);
+
+      phase++;
+    };
+
+    div.appendChild(btn);
+  });
+}
+
+function getReply(key){
+  return key === 'weekend'
+    ? "友達とご飯行ったりすることが多いかな！"
+    : "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
+}
+
+// =================================
+// 追加課題
+// =================================
+function selectFinal(){
+  document.getElementById('choiceBlock').style.display = 'none';
+  const reply = condition.certainty === 'certain'
+    ? '相手の回答：はい'
+    : '相手の回答：都合が悪いのでいいえ';
+  document.getElementById('partnerReply').innerText = reply;
+  document.getElementById('resultBlock').style.display = 'block';
+}
+
+function goToForm(){
+  next(4);
+  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url&entry.1787887357=${participantId}`;
+  document.getElementById('formLink').href = url;
 }
 </script>
 
