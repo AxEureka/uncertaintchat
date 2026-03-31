@@ -122,6 +122,14 @@ function sendInput(){
   addMsg(val,'user');
   document.getElementById('input').value = "";
 
+  if(isFinal){
+    setTimeout(()=>{
+      addMsg("チャットを終了します",'system');
+      setTimeout(()=> next(5),1500);
+    },800);
+    return;
+  }
+
   flow();
 }
 
@@ -133,20 +141,21 @@ function flow(){
     },800);
   }
   else if(phase === 1){
+    // 1回目の質問回答後 → 趣味質問
     setTimeout(()=>{
       addMsg("趣味は何ですか？",'partner');
       setInputMode("free");
-      phase++;
     },800);
   }
   else if(phase === 2){
+    // 趣味回答後 → 相手返答
     setTimeout(()=>{
       addMsg("私は映画を見るのが好きです",'partner');
       showChoices();
-      phase++;
     },800);
   }
   else if(phase === 3){
+    // 2回目質問回答後 → 終了前フロー
     setTimeout(()=>{
       addMsg("あと1ターンで終了です…",'system');
 
@@ -158,17 +167,9 @@ function flow(){
 
         // ユーザー自由入力待ち
         setInputMode("free");
-        isFinal = true; // 次の送信で終了処理
+        isFinal = true;
       },800);
     },800);
-  }
-  else if(phase === 4){
-    if(isFinal){
-      setTimeout(()=>{
-        addMsg("チャットを終了します",'system');
-        setTimeout(()=> next(5),1500);
-      },800);
-    }
   }
 
   phase++;
