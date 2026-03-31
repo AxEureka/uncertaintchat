@@ -74,25 +74,12 @@ let condition = {
   certainty: Math.random() < 0.5 ? "certain" : "uncertain"
 };
 
-// =================================
-// 画面切り替え関数（必須）
-// =================================
 function next(n){
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen'+n).classList.add('active');
 }
 
-// =================================
-// メッセージ追加＆入力制御
-// =================================
-function addMsg(text, cls){
-  const div = document.createElement('div');
-  div.className = 'msg '+cls;
-  div.innerText = text;
-  document.getElementById('chat').appendChild(div);
-  div.scrollIntoView();
-}
-
+// モード切替＋systemメッセージ表示
 function setInputMode(mode){
   const input = document.getElementById('input');
   input.disabled = (mode !== "free");
@@ -105,9 +92,14 @@ function setInputMode(mode){
   }
 }
 
-// =================================
-// チャット開始
-// =================================
+function addMsg(text, cls){
+  const div = document.createElement('div');
+  div.className = 'msg '+cls;
+  div.innerText = text;
+  document.getElementById('chat').appendChild(div);
+  div.scrollIntoView();
+}
+
 function startChat(){
   userName = document.getElementById('name').value;
   const gender = document.getElementById('gender').value;
@@ -124,9 +116,7 @@ function startChat(){
   },1800);
 }
 
-// =================================
-// 入力送信
-// =================================
+// ユーザー入力時
 function sendInput(){
   const val = document.getElementById('input').value;
   if(!val) return;
@@ -145,40 +135,43 @@ function sendInput(){
   flow();
 }
 
-// =================================
-// チャットフロー
-// =================================
+// フローロジック
 function flow(){
   if(phase === 0){
-    // ユーザーが最初の入力後
     setTimeout(()=>{
       addMsg("よろしくお願いします！",'partner');
-      showChoices(); // 最初の質問ボタン選択
+      showChoices(); // 最初の質問ボタン表示
     },800);
   }
 
   else if(phase === 1){
-    // ユーザーが1つ目の質問入力後
-    setTimeout(()=> addMsg("そうなんですね！",'partner'),800);
-    setTimeout(()=> addMsg("相手が質問を選んでいます…",'system'),1600);
+    // 1回目質問入力後
+    setTimeout(()=>{
+      addMsg("そうなんですね！",'partner');
+    },800);
+
+    setTimeout(()=>{
+      addMsg("相手が質問を選んでいます…",'system');
+    },1600);
+
     setTimeout(()=>{
       addMsg("趣味は何ですか？",'partner');
-      setInputMode("free");
-      phase++;
+      setInputMode("free"); // 自由入力
+      phase++; // phase=2
     },2400);
   }
 
   else if(phase === 2){
     // 趣味入力後
     setTimeout(()=>{
-      addMsg("私は映画を見るのが好きです",'partner');
-      showChoices(); // 次の質問ボタン選択
+      addMsg("私は映画を見るのが好きです",'partner'); // 相手返答
+      showChoices(); // 2回目の質問ボタン
     },800);
-    phase++;
+    phase++; // phase=3
   }
 
   else if(phase === 3){
-    // 2つ目の質問後、終了
+    // 2回目質問入力後
     setTimeout(()=>{
       addMsg("なるほど",'partner');
       addMsg("もう時間みたいです…",'system');
@@ -190,17 +183,16 @@ function flow(){
 
         addMsg(msg,'partner');
 
+        // 最後の自由入力
         setInputMode("free");
         addMsg("最後にメッセージを送ってください",'system');
-        isFinal = true;
+        isFinal = true; // この送信で終了
       },800);
     },800);
   }
 }
 
-// =================================
 // 質問ボタン表示
-// =================================
 function showChoices(){
   const div = document.getElementById('choices');
   div.innerHTML = '';
@@ -250,9 +242,6 @@ function getReply(key){
     : "私を楽しませてくれる人、笑わせてくれる人がいいなって思う！";
 }
 
-// =================================
-// 追加課題
-// =================================
 function selectFinal(){
   document.getElementById('choiceBlock').style.display = 'none';
   const reply = condition.certainty === 'certain'
