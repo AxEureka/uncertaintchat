@@ -122,14 +122,6 @@ function sendInput(){
   addMsg(val,'user');
   document.getElementById('input').value = "";
 
-  if(isFinal){
-    setTimeout(()=>{
-      addMsg("チャットを終了します",'system');
-      setTimeout(()=> next(5),1500); // 追加課題画面に戻る
-    },800);
-    return;
-  }
-
   flow();
 }
 
@@ -137,59 +129,49 @@ function flow(){
   if(phase === 0){
     setTimeout(()=>{
       addMsg("よろしくお願いします！",'partner');
-      showChoices(); // 1回目質問ボタン
+      showChoices();
     },800);
   }
-
   else if(phase === 1){
-    setTimeout(()=>{
-      addMsg("そうなんですね！",'partner');
-    },800);
-
-    setTimeout(()=>{
-      addMsg("相手が質問を選んでいます…",'system');
-    },1600);
-
     setTimeout(()=>{
       addMsg("趣味は何ですか？",'partner');
       setInputMode("free");
-      phase++; // phase=2: 趣味入力
-    },2400);
+      phase++;
+    },800);
   }
-
   else if(phase === 2){
     setTimeout(()=>{
       addMsg("私は映画を見るのが好きです",'partner');
-      showChoices(); // 2個目質問ボタン
-      phase++; // phase=3: 2個目質問入力
+      showChoices();
+      phase++;
     },800);
   }
-
   else if(phase === 3){
     setTimeout(()=>{
-      addMsg("なるほど",'partner');
+      addMsg("あと1ターンで終了です…",'system');
 
       setTimeout(()=>{
-        addMsg("あと1ターンで終了です。",'system');
-        setInputMode("free"); // 最後自由入力
-        phase++; // phase=4: 最後自由入力
+        const msg = condition.liking === 'high'
+          ? '今日はありがとう、あなたと話すのはとても楽しかった！'
+          : '今日はありがとう！';
+        addMsg(msg,'partner');
+
+        // ユーザー自由入力待ち
+        setInputMode("free");
+        isFinal = true; // 次の送信で終了処理
       },800);
     },800);
   }
-
   else if(phase === 4){
-    setTimeout(()=>{
-      const msg = condition.liking === 'high'
-        ? '今日はありがとう、あなたと話すのはとても楽しかった！'
-        : '今日はありがとう！';
-      addMsg(msg,'partner');
-
+    if(isFinal){
       setTimeout(()=>{
         addMsg("チャットを終了します",'system');
         setTimeout(()=> next(5),1500);
       },800);
-    },800);
+    }
   }
+
+  phase++;
 }
 
 function showChoices(){
