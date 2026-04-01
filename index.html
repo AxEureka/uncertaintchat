@@ -244,7 +244,6 @@ function selectFinal(){
 
 // --- ここからログ保存＋フォーム連携 ---
 async function saveChatLog(){
-  // チャット内容を取得
   const chatMsgs = [...document.querySelectorAll('#chat .msg')].map(d=>({
     text: d.innerText,
     cls: d.className
@@ -252,19 +251,24 @@ async function saveChatLog(){
 
   const logData = {
     participantId,
-    condition: { liking: condition.liking === 'high' ? 1 : 0, certainty: condition.certainty === 'certain' ? 1 : 0 },
+    condition: { 
+      liking: condition.liking === 'high' ? 1 : 0, 
+      certainty: condition.certainty === 'certain' ? 1 : 0 
+    },
     chat: chatMsgs
   };
 
-  // サーバーにPOSTして保存（サーバー側に /save_log エンドポイントが必要）
   try{
-    const res = await fetch('/save_log', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(logData)
+    await fetch("https://script.google.com/macros/s/AKfycbxiS0D5qYfZc4InE2CZmAvAksblss8gcuLIYCwexD2CkNE96ZALQAh7ahTZkcfdcxgO/exec", {
+      method: "POST",
+      body: JSON.stringify(logData),
+      headers: {
+        "Content-Type": "application/json"
+      }
     });
-    const data = await res.json(); // {url:"保存先URL"}
-    return data.url;
+
+    // GASはURL返さないのでダミー
+    return "saved";
   }catch(e){
     console.error("ログ保存失敗:", e);
     return "";
