@@ -263,9 +263,6 @@ async function saveChatLog(){
       method: "POST",
       body: JSON.stringify(logData),
       mode: "no-cors"
-      headers: {
-        "Content-Type": "application/json"
-      }
     });
 
     // GASはURL返さないのでダミー
