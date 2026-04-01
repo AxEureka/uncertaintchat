@@ -129,21 +129,18 @@ function sendInput(){
 
 function flow(){
   if(phase === 0){
-    // 挨拶後ユーザー入力 → partner「よろしくお願いします！」 → 質問選択
     setTimeout(()=>{
       addMsg("よろしくお願いします！",'partner');
       showChoices();
     },800);
   }
   else if(phase === 1){
-    // 1回目質問回答後 → partner「〇〇さんは？」 → free入力
     setTimeout(()=>{
       addMsg("〇〇さんは？",'partner');
       setInputMode("free");
     },800);
   }
   else if(phase === 2){
-    // 1回目ユーザー回答後 → partner「いいですね」 → 2回目質問
     setTimeout(()=>{
       addMsg("いいですね",'partner');
       addMsg("相手が質問を選んでいます",'system');
@@ -154,21 +151,18 @@ function flow(){
     },800);
   }
   else if(phase === 3){
-    // 2回目ユーザー回答後 → partner回答 → 質問ボタン残り選択
     setTimeout(()=>{
       addMsg("私は今の職場から独立したいと考えています。",'partner');
       showChoices();
     },800);
   }
   else if(phase === 4){
-    // 最後質問回答後 → partner「〇〇さんは？」 → free入力
     setTimeout(()=>{
       addMsg("〇〇さんは？",'partner');
       setInputMode("free");
     },800);
   }
   else if(phase === 5){
-    // 最後ユーザー回答後 → system「時間です」 → partner最終メッセージ → free入力 → 終了
     setTimeout(()=>{
       addMsg("時間です。最後のメッセージを送ってください。",'system');
       const msg = condition.liking === 'high'
@@ -201,7 +195,6 @@ function showChoices(){
       {text:"恋人にするならどんな人がいいですか？", key:"type"}
     ];
   }else{
-    // 残っている質問のみ表示
     options = [
       {text: firstChoice === 'weekend' ? "恋人にするならどんな人がいいですか？" : "休みの日は何をしていますか？", 
        key: firstChoice === 'weekend' ? 'type' : 'weekend'}
@@ -249,12 +242,46 @@ function selectFinal(){
   document.getElementById('resultBlock').style.display = 'block';
 }
 
-function goToForm(){
+// --- ここからログ保存＋フォーム連携 ---
+async function saveChatLog(){
+  // チャット内容を取得
+  const chatMsgs = [...document.querySelectorAll('#chat .msg')].map(d=>({
+    text: d.innerText,
+    cls: d.className
+  }));
+
+  const logData = {
+    participantId,
+    condition: { liking: condition.liking === 'high' ? 1 : 0, certainty: condition.certainty === 'certain' ? 1 : 0 },
+    chat: chatMsgs
+  };
+
+  // サーバーにPOSTして保存（サーバー側に /save_log エンドポイントが必要）
+  try{
+    const res = await fetch('/save_log', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(logData)
+    });
+    const data = await res.json(); // {url:"保存先URL"}
+    return data.url;
+  }catch(e){
+    console.error("ログ保存失敗:", e);
+    return "";
+  }
+}
+
+async function goToForm(){
   next(4);
-  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url&entry.1787887357=${participantId}`;
+
+  const logUrl = await saveChatLog(); // 自動保存してURL取得
+  const likingCode = condition.liking === 'high' ? 1 : 0;
+  const certaintyCode = condition.certainty === 'certain' ? 1 : 0;
+
+  // GoogleフォームURLに participantId, 条件, ログURL を渡す
+  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url&entry.1787887357=test&entry.2146909032=log-rink&entry.186622541=high-low&entry.249003931=certain-uncertain`;
   document.getElementById('formLink').href = url;
 }
 </script>
-
 </body>
 </html>
