@@ -279,7 +279,13 @@ async function goToForm(){
   const certaintyCode = condition.certainty === 'certain' ? 1 : 0;
 
   // GoogleフォームURLに participantId, 条件, ログURL を渡す
-  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url&entry.1787887357=test&entry.2146909032=log-rink&entry.186622541=high-low&entry.249003931=certain-uncertain`;
+  const url = `https://docs.google.com/forms/d/e/1FAIpQLScU0aHR0LlC2TCniUz0ZhXG-ULv-AXwBzvXxuTjb34hJa6mNQ/viewform?usp=pp_url` +
+              `&entry.1787887357=${participantId}` +
+              `&entry.2146909032=${encodeURIComponent(logUrl)}` +
+              `&entry.186622541=${likingCode}` +
+              `&entry.249003931=${certaintyCode}`;
+  document.getElementById('formLink').href = url;
+}             
   document.getElementById('formLink').href = url;
 }
 </script>
