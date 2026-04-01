@@ -259,9 +259,10 @@ async function saveChatLog(){
   };
 
   try{
-    await fetch("https://script.google.com/macros/s/AKfycbzK1P5DmfsD7iI7tJ_RMhznvCmJ9Bu0GpkHLwq7YNTaA9QcIoqMIPBmYYnSTIUfNz0E/exec", {
+    await fetch("https://script.google.com/macros/s/AKfycbwi0QMMj8YrGkzoWsn32NRiGgp2Wntj_e5X6wuGAEy5H1HLmo2c69sjI-pJ2Bu9O6bY/exec", {
       method: "POST",
       body: JSON.stringify(logData),
+      mode: "no-cors"
       headers: {
         "Content-Type": "application/json"
       }
