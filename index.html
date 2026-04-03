@@ -12,7 +12,7 @@
 
 <div id="screen1" class="screen active">
 <h2>実験の説明</h2>
-<p>これは架空のテキストチャットを体験する課題です。</p>
+<p>次のページでは、架空のテキストチャットを体験してもらいます。</p>
 <button onclick="next(2)">次へ</button>
 </div>
 
@@ -164,7 +164,7 @@ function flow(){
   }
   else if(phase === 5){
     setTimeout(()=>{
-      addMsg("チャットは後1ターンで終了です。次がお互いに最後のメッセージとなります。",'system');
+      addMsg("チャットは後1ターンで終了です。<br>次がお互いに最後のメッセージとなります。",'system');
       const msg = condition.liking === 'high'
         ? '今日はありがとう。お話できてとても楽しかったです！'
         : '今日はありがとう。';
@@ -230,7 +230,7 @@ function showChoices(){
 function getReply(key){
   return key === 'weekend'
     ? "本を読んだり、友達とごはんに行ったりしてます"
-    : "笑わせてくれる人とか、優しい人、一緒にいて楽しい人が好きです。";
+    : "笑わせてくれる人、優しい人、一緒にいて楽しい人が好きです。";
 }
 
 function selectFinal(){
