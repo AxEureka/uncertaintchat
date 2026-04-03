@@ -38,13 +38,13 @@
 </div>
 
 <div id="screen5" class="screen">
-<h2>追加の課題</h2>
-<p>追加の課題を行いますか？</p>
+<h2>追加のチャット</h2>
+<p>お互いが希望した場合、この後同じ相手と追加チャットを行うことができます。<br>追加チャットを行いますか？</p>
 
 <div id="choiceBlock">
 <button onclick="selectFinal()">はい</button>
 <button onclick="selectFinal()">いいえ</button>
-<button onclick="selectFinal()">都合が悪いのでいいえ</button>
+<button onclick="selectFinal()">時間がないのでいいえ</button>
 </div>
 
 <div id="resultBlock" style="display:none;">
@@ -152,7 +152,7 @@ function flow(){
   }
   else if(phase === 3){
     setTimeout(()=>{
-      addMsg("私は今の職場から独立したいと考えています。",'partner');
+      addMsg("私は独立を考えています。まだ何もしていませんが…。",'partner');
       showChoices();
     },800);
   }
@@ -164,9 +164,9 @@ function flow(){
   }
   else if(phase === 5){
     setTimeout(()=>{
-      addMsg("時間です。最後のメッセージを送ってください。",'system');
+      addMsg("チャットは後1ターンで終了です。次がお互いに最後のメッセージとなります。",'system');
       const msg = condition.liking === 'high'
-        ? '今日はありがとう。話しててとても楽しかったです！'
+        ? '今日はありがとう。お話できてとても楽しかったです！'
         : '今日はありがとう。';
       addMsg(msg,'partner');
       setInputMode("free");
@@ -230,7 +230,7 @@ function showChoices(){
 function getReply(key){
   return key === 'weekend'
     ? "本を読んだり、友達とごはんに行ったりしてます"
-    : "話してて楽しい人が好きです。";
+    : "笑わせてくれる人とか、優しい人、一緒にいて楽しい人が好きです。";
 }
 
 function selectFinal(){
