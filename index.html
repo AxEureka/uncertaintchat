@@ -164,7 +164,8 @@ function flow(){
   }
   else if(phase === 5){
     setTimeout(()=>{
-      addMsg("チャットは後1ターンで終了です。<br>次がお互いに最後のメッセージとなります。",'system');
+      addMsg("チャットは後1ターンで終了です。次がお互いに最後のメッセージとなります。",'system');
+      addMsg("次がお互いに最後のメッセージとなります。",'system');
       const msg = condition.liking === 'high'
         ? '今日はありがとう。お話できてとても楽しかったです！'
         : '今日はありがとう。';
