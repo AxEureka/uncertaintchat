@@ -42,9 +42,9 @@
 <p>お互いが希望した場合、この後同じ相手と追加チャットを行うことができます。<br>追加チャットを行いますか？</p>
 
 <div id="choiceBlock">
-<button onclick="selectFinal()">はい</button>
+<button onclick="selectFinal()">行う</button>
 <button onclick="selectFinal()">別の日程なら行う</button>
-<button onclick="selectFinal()">いいえ</button>
+<button onclick="selectFinal()">行わない</button>
 </div>
 
 <div id="resultBlock" style="display:none;">
@@ -237,8 +237,8 @@ function getReply(key){
 function selectFinal(){
   document.getElementById('choiceBlock').style.display = 'none';
   const reply = condition.certainty === 'certain'
-    ? '相手の回答：はい'
-    : '相手の回答：いいえ(時間がない)';
+    ? '相手の回答：行う'
+    : '相手の回答：別の日程なら行う';
   document.getElementById('partnerReply').innerText = reply;
   document.getElementById('resultBlock').style.display = 'block';
 }
