@@ -43,8 +43,8 @@
 
 <div id="choiceBlock">
 <button onclick="selectFinal()">はい</button>
+<button onclick="selectFinal()">別日程なら可(日程調整を行います)</button>
 <button onclick="selectFinal()">いいえ</button>
-<button onclick="selectFinal()">いいえ(時間がない)</button>
 </div>
 
 <div id="resultBlock" style="display:none;">
@@ -167,7 +167,7 @@ function flow(){
       addMsg("チャットは後1ターンで終了です。",'system');
       addMsg("次がお互いに最後のメッセージとなります。",'system');
       const msg = condition.liking === 'high'
-        ? '今日はありがとう。お話できてとても楽しかったです！'
+        ? '今日はありがとう。またお話したいです！'
         : '今日はありがとう。';
       addMsg(msg,'partner');
       setInputMode("free");
