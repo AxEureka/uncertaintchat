@@ -96,6 +96,8 @@ input {
 /* スマホ対応 */
 @media (max-width: 600px) {
   .chat-box {
-    height: 60vh;
+    min-height: 300px;
+  }
+}
   }
 }
