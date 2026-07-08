@@ -23,8 +23,6 @@ body {
 
 /* チャットエリア */
 .chat-box {
-  height: 55vh;
-  overflow-y: auto;
   background: #ffffff;
   padding: 10px;
   border-radius: 10px;
@@ -84,10 +82,6 @@ button:hover {
 .input-area {
   display: flex;
   margin-top: 10px;
-  position: sticky;
-  bottom: 0;
-  background: #f0f0f0;
-  padding: 5px;
 }
 
 /* 入力欄 */
