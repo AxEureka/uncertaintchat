@@ -1,3 +1,7 @@
+body {
+    background: red !important;
+}
+
 /* 全体 */
 body {
   font-family: system-ui, sans-serif;
