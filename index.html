@@ -297,25 +297,32 @@ function showChoices(){
     btn.innerText = opt.text;
   
     btn.onclick = ()=>{
-  
+
       addMsg(opt.text,'user');
-  
+    
       div.innerHTML='';
-  
+    
       if(!firstChoice){
         firstChoice = opt.key;
         secondChoice = opt.key === 'weekend'
           ? 'type'
           : 'weekend';
       }
-  
-     partnerReply(
-        `${getReply(opt.key)}\n${userName}さんは？`,
-        ()=> setInputMode("free")
+    
+      partnerReply(
+        getReply(opt.key),
+        ()=>{
+          setTimeout(()=>{
+            partnerReply(
+              `${userName}さんは？`,
+              ()=> setInputMode("free")
+            );
+          },500);
+        }
       );
-        
-      phase++;
-    };
+
+  phase++;
+};
   
     div.appendChild(btn);
   });
