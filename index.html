@@ -80,10 +80,40 @@ let questionsAnswered = { first: false, second: false };
 
 const participantId = "P" + Date.now() + Math.floor(Math.random()*1000);
 
-let condition = {
-  liking: Math.random() < 0.5 ? "high" : "low",
-  certainty: Math.random() < 0.5 ? "certain" : "uncertain"
-};
+const conditionNumber =
+  parseInt(participantId.replace("P","")) % 4;
+
+let condition;
+
+switch(conditionNumber){
+  case 0:
+    condition = {
+      liking: "high",
+      certainty: "certain"
+    };
+    break;
+
+  case 1:
+    condition = {
+      liking: "high",
+      certainty: "uncertain"
+    };
+    break;
+
+  case 2:
+    condition = {
+      liking: "low",
+      certainty: "certain"
+    };
+    break;
+
+  case 3:
+    condition = {
+      liking: "low",
+      certainty: "uncertain"
+    };
+    break;
+}
 
 function next(n){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -232,21 +262,7 @@ function flow(){
   );
 
 }
-  else if(phase === 4){
-
-  partnerReply(
-    getReply(opt.key),
-    ()=>{
-      setTimeout(()=>{
-        partnerReply(
-          `${userName}さんは？`,
-          ()=> setInputMode("free")
-        );
-      },500);
-    }
-  );
-
-}
+ 
   else if(phase === 5){
 
   addMsg("チャットは後1ターンで終了です。",'system');
