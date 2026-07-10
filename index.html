@@ -18,7 +18,9 @@
 </div>
 
 <div id="screen2" class="screen">
-<h2>チャットで使う名前を入力してください<br>(ニックネーム可)</h2>
+<h2>あなたの名前(ニックネーム可)と性別を入力してください。<br>準備ができたら下の開始ボタンを押してください。</h2>
+
+<label for="gender">名前(ニックネーム可)を入力してください</label><br><br>
 <input id="name" placeholder="名前"><br><br>
   
 <label for="gender">性別を選択してください</label><br><br>
@@ -264,11 +266,11 @@ function flow(){
 }
  else if(isFinal){
 
-  addMsg("チャットを終了しています",'system');
+  addMsg("チャットを終了中。しばらくお待ちください。",'system');
 
   setTimeout(()=>{
     next(5);
-  },5000);
+  },3500);
 
 }
 
