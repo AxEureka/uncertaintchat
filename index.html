@@ -229,8 +229,15 @@ function flow(){
   else if(phase === 4){
 
   partnerReply(
-    "〇〇さんは？",
-    ()=> setInputMode("free")
+    getReply(opt.key),
+    ()=>{
+      setTimeout(()=>{
+        partnerReply(
+          `${userName}さんは？`,
+          ()=> setInputMode("free")
+        );
+      },500);
+    }
   );
 
 }
