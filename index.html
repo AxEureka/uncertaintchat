@@ -209,20 +209,21 @@ function flow(){
     "いいですね",
     ()=>{
       addMsg("相手が質問を選んでいます",'system');
-
+  
       setTimeout(()=>{
-
-        partnerReply(
+  
+        addMsg(
           "将来やってみたいことはありますか？",
-          ()=> setInputMode("free")
+          "partner"
         );
-
-      },1500);
-
+  
+        setInputMode("free");
+  
+      },2500);
+  
     }
   );
-
-}
+  }
   else if(phase === 3){
 
   partnerReply(
@@ -270,7 +271,7 @@ function flow(){
 
   setTimeout(()=>{
     next(5);
-  },3500);
+  },4000);
 
 }
 
