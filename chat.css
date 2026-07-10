@@ -80,15 +80,15 @@ button {
   padding: 16px 28px;
   font-size: 1.1em;
   margin: 8px;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 8px;
-  background: #0084ff;
-  color: white;
+  background: white;
+  color: #333;
   cursor: pointer;
 }
 
 button:hover {
-  opacity: 0.9;
+  background: #f5f5f5;
 }
 
 /* 選択肢エリア */
