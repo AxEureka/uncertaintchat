@@ -12,14 +12,16 @@
 
 <div id="screen1" class="screen active">
 <h2>実験の説明</h2>
-<p>次のページでは、架空のテキストチャットを体験してもらいます。<br>
-指示に従って、相手への質問を選ぶ、または自分の回答を入力してください。</p>
+<p>次のページから、架空のテキストチャットを体験してもらいます。<br>
+指示に従って、相手への質問を選んだり、回答を入力したりしてください。</p>
 <button onclick="next(2)">次へ</button>
 </div>
 
 <div id="screen2" class="screen">
 <h2>チャットで使う名前を入力してください<br>(ニックネーム可)</h2>
 <input id="name" placeholder="名前"><br><br>
+  
+<label for="gender">性別を選択してください</label><br><br>
 <select id="gender">
 <option value="male">男性</option>
 <option value="female">女性</option>
@@ -266,7 +268,7 @@ function flow(){
 
   setTimeout(()=>{
     next(5);
-  },1500);
+  },5000);
 
 }
 
