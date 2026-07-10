@@ -112,16 +112,7 @@ input {
   margin-right: 5px;
 }
 
-#screen1,
-#screen2,
-#screen4,
-#screen5 {
-  min-height: 80vh;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
 
 /* スマホ対応 */
 @media (max-width: 600px) {
