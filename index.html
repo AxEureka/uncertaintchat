@@ -17,7 +17,7 @@
 </div>
 
 <div id="screen2" class="screen">
-<h2>登録</h2>
+<h2>チャットで使う名前を入力してください(ニックネーム可)</h2>
 <input id="name" placeholder="名前"><br><br>
 <select id="gender">
 <option value="male">男性</option>
@@ -110,6 +110,49 @@ function addMsg(text, cls){
   });
 }
 
+function showTyping(){
+
+  const div = document.createElement('div');
+  div.className = 'msg system typing';
+  div.id = 'typing';
+
+  div.innerText = `相手が入力しています...`;
+
+  document.getElementById('chat').appendChild(div);
+
+  div.scrollIntoView({
+    behavior: "smooth",
+    block: "end"
+  });
+}
+
+function hideTyping(){
+  const t = document.getElementById('typing');
+  if(t) t.remove();
+}
+  
+function partnerReply(text, callback = null){
+
+  showTyping();
+
+  const delay = Math.min(
+    3000,
+    1000 + text.length * 40
+  );
+
+  setTimeout(()=>{
+
+    hideTyping();
+
+    addMsg(text,'partner');
+
+    if(callback){
+      callback();
+    }
+
+  },delay);
+}
+
 function startChat(){
   userName = document.getElementById('name').value;
   const gender = document.getElementById('gender').value;
@@ -121,9 +164,15 @@ function startChat(){
 
   next(3);
 
-  setTimeout(()=> addMsg(`こんにちは、${partnerName}です。`, 'partner'),800);
-  setTimeout(()=> addMsg(`${userName}さんですか？`, 'partner'),1600);
-  setTimeout(()=> setInputMode("free"),2000);
+  partnerReply(
+    `こんにちは、${partnerName}です。`,
+    ()=>{
+      partnerReply(
+        `${userName}さんですか？`,
+        ()=> setInputMode("free")
+      );
+    }
+  );
 }
 
 function sendInput(){
@@ -138,57 +187,80 @@ function sendInput(){
 
 function flow(){
   if(phase === 0){
-    setTimeout(()=>{
-      addMsg("よろしくお願いします！",'partner');
-      showChoices();
-    },800);
+    partnerReply(
+      "よろしくお願いします！",
+      showChoices
+    );
   }
   else if(phase === 1){
-    setTimeout(()=>{
-      addMsg("〇〇さんは？",'partner');
-      setInputMode("free");
-    },800);
+    partnerReply(
+      "〇〇さんは？",
+      ()=> setInputMode("free")
+    );
   }
-  else if(phase === 2){
-    setTimeout(()=>{
-      addMsg("いいですね",'partner');
+ else if(phase === 2){
+
+  partnerReply(
+    "いいですね",
+    ()=>{
       addMsg("相手が質問を選んでいます",'system');
+
       setTimeout(()=>{
-        addMsg("将来やってみたいことはありますか？",'partner');
-        setInputMode("free");
-      },800);
-    },800);
-  }
+
+        partnerReply(
+          "将来やってみたいことはありますか？",
+          ()=> setInputMode("free")
+        );
+
+      },1500);
+
+    }
+  );
+
+}
   else if(phase === 3){
-    setTimeout(()=>{
-      addMsg("私は独立を考えています。まだ何もしていませんが…。",'partner');
-      showChoices();
-    },800);
-  }
+
+  partnerReply(
+    "私は独立を考えています。まだ何もしていませんが…。",
+    showChoices
+  );
+
+}
   else if(phase === 4){
-    setTimeout(()=>{
-      addMsg("〇〇さんは？",'partner');
-      setInputMode("free");
-    },800);
-  }
+
+  partnerReply(
+    "〇〇さんは？",
+    ()=> setInputMode("free")
+  );
+
+}
   else if(phase === 5){
-    setTimeout(()=>{
-      addMsg("チャットは後1ターンで終了です。",'system');
-      addMsg("次がお互いに最後のメッセージとなります。",'system');
-      const msg = condition.liking === 'high'
-        ? '今日はありがとう。とても楽しかったのでまたお話したいです！'
-        : '今日はありがとう。';
-      addMsg(msg,'partner');
+
+  addMsg("チャットは後1ターンで終了です。",'system');
+  addMsg("次がお互いに最後のメッセージとなります。",'system');
+
+  const msg = condition.liking === 'high'
+      ? '今日はありがとう。とても楽しかったのでまたお話したいです！'
+      : '今日はありがとう。';
+
+  partnerReply(
+    msg,
+    ()=>{
       setInputMode("free");
       isFinal = true;
-    },800);
-  }
-  else if(isFinal){
-    setTimeout(()=>{
-      addMsg("チャットを終了します",'system');
-      setTimeout(()=> next(5),1500);
-    },800);
-  }
+    }
+  );
+
+}
+ else if(isFinal){
+
+  addMsg("チャットを終了しています",'system');
+
+  setTimeout(()=>{
+    next(5);
+  },1500);
+
+}
 
   phase++;
 }
@@ -212,27 +284,31 @@ function showChoices(){
   }
 
   options.forEach(opt=>{
+
     const btn = document.createElement('button');
     btn.innerText = opt.text;
-
+  
     btn.onclick = ()=>{
+  
       addMsg(opt.text,'user');
+  
       div.innerHTML='';
-
+  
       if(!firstChoice){
         firstChoice = opt.key;
-        secondChoice = opt.key === 'weekend' ? 'type' : 'weekend';
+        secondChoice = opt.key === 'weekend'
+          ? 'type'
+          : 'weekend';
       }
-
-      setTimeout(()=>{
-        addMsg(getReply(opt.key),'partner');
-        addMsg(`${userName}さんは？`,'partner');
-        setInputMode("free");
-      },800);
-
+  
+     partnerReply(
+        `${getReply(opt.key)}\n${userName}さんは？`,
+        ()=> setInputMode("free")
+      );
+        
       phase++;
     };
-
+  
     div.appendChild(btn);
   });
 }
