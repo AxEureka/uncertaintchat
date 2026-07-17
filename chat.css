@@ -126,6 +126,12 @@ input {
   margin-right: 5px;
 }
 
+.input-area input:disabled{
+  background:#eeeeee;
+  color:#888;
+  cursor:not-allowed;
+}
+
 #formLink {
   display: inline-block;
   padding: 16px 28px;
