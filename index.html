@@ -75,6 +75,8 @@ let userName = "";
 let partnerName = "";
 let firstChoice = null;
 let secondChoice = null;
+let chatStartTime = null;
+let chatEndTime = null;
 let isFinal = false;
 let questionsAnswered = { first: false, second: false };
 
@@ -189,6 +191,7 @@ function partnerReply(text, callback = null){
 }
 
 function startChat(){
+  chatStartTime = new Date().toISOString();
   userName = document.getElementById('name').value;
   const gender = document.getElementById('gender').value;
   if(!userName){ alert("名前を入力してください"); return; }
@@ -286,6 +289,7 @@ function flow(){
   addMsg("チャットを終了中。しばらくお待ちください。",'system');
 
   setTimeout(()=>{
+    chatEndTime = new Date().toISOString();
     next(5);
   },4000);
 
@@ -371,8 +375,19 @@ async function saveChatLog(){
     cls: d.className
   }));
 
+  const durationSec =
+    chatStartTime && chatEndTime
+      ? Math.round(
+          (new Date(chatEndTime) - new Date(chatStartTime))
+          / 1000
+        )
+      : null;
+
   const logData = {
     participantId,
+    chatStartTime,
+  　chatEndTime,
+    durationSec,
     condition: { 
       liking: condition.liking === 'high' ? 1 : 0, 
       certainty: condition.certainty === 'certain' ? 1 : 0 
