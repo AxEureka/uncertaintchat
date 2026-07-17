@@ -135,6 +135,12 @@ function setInputMode(mode){
   }
 }
 
+function disableInput(){
+  const input = document.getElementById('input');
+  input.disabled = true;
+  input.placeholder = "お待ちください";
+}
+  
 function addMsg(text, cls){
   const div = document.createElement('div');
   div.className = 'msg ' + cls;
@@ -202,6 +208,7 @@ function startChat(){
   else partnerName = Math.random() < 0.5 ? "アヤ" : "リョウ";
 
   next(3);
+  disableInput();
 
   partnerReply(
     `こんにちは、${partnerName}です。`,
@@ -220,7 +227,11 @@ function sendInput(){
 
   addMsg(val,'user');
   document.getElementById('input').value = "";
-
+  
+  if(isFinal){
+    disableInput();
+  }
+  
   flow();
 }
 
@@ -287,7 +298,8 @@ function flow(){
 }
  else if(isFinal){
 
-  addMsg("チャットを終了中。しばらくお待ちください。",'system');
+   disableInput();
+   addMsg("チャットを終了中。しばらくお待ちください。",'system');
 
   setTimeout(()=>{
     chatEndTime = new Date().toISOString();
