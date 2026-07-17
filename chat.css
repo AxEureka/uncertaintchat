@@ -76,8 +76,9 @@ a {
 }
 
 #partnerReply{
-  font-size: 1.4rem;
+  font-size: 1.8em;
   font-weight: bold;
+  text-align: center;
   color: #222;
   margin: 20px 0;
 }
