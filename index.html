@@ -177,6 +177,7 @@ function hideTyping(){
   
 function partnerReply(text, callback = null){
 
+  disableInput();
   showTyping();
 
   const delay = Math.min(
@@ -253,6 +254,7 @@ function flow(){
   partnerReply(
     "いいですね",
     ()=>{
+      disableInput();
       addMsg("相手が質問を選んでいます",'system');
   
       setTimeout(()=>{
