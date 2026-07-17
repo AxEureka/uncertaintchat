@@ -76,11 +76,15 @@ a {
 }
 
 #partnerReply{
-  font-size: 1.8em;
-  font-weight: bold;
-  text-align: center;
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 700;
   color: #222;
-  margin: 20px 0;
+  margin: 30px 0;
+  text-align: center;
+
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 12px;
 }
 
 /* 自分 */
